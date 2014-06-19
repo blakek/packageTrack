@@ -55,3 +55,6 @@ docs/_build/
 # Don't share API keys :)
 apikey
 
+# Don't share packages, either
+packages
+
