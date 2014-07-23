@@ -38,23 +38,48 @@ class Package:
         payload = self.getPayload()
         return PackagePayload(payload)
 
+def GetReason(errorCode):
+    if errorCode == 601:
+        return 'Invalid API key'
+    elif errorCode == 602:
+        return 'Failed to find tracking number from shipper'
+    elif errorCode == 604:
+        return 'Map API key is required but not found'
+    elif errorCode == 605:
+        return 'Invalid alias provided'
+    else:
+        return 'Unknown error'
+
 def Main():
-    COLUMNS = '%-24s %-8s %-8s %-13s'
+    COLUMNS = '%-24s %-10s %-10s %-13s'
 
     print(COLUMNS % ('Tracking #', 'Shipper', 'Status', 'Delivery Est.'))
-    print('=' * 56)
+    print('=' * 60)
     
     for trackingNo in open('packages', 'r'):
-        p = Package(trackingNo)
+        if (trackingNo.isspace()):
+            continue
+
+        p = Package(trackingNo.strip())
         i = p.getInfo()
+
+        if i.result == 'error':
+            print(COLUMNS % (p.TrackingNumber,
+                             '* Error: %s *' % GetReason(i.error['errorCode']),
+                             '',
+                             ''))
+            continue
+
+        if i.data['deliveryEstimate'] == None or i.data['deliveryEstimate'] == False:
+            i.data['deliveryEstimate'] = ' - '
 
         print(COLUMNS % (p.TrackingNumber,
                          i.data['shipper'],
-                         i.data['shipmentStatus'],
+                         i.data['shipmentStatus'].title(),
                          i.data['deliveryEstimate']
                          ))
         
-        print('-' * 56)
+        #print('-' * 60)
 
 
 if __name__ == '__main__':
