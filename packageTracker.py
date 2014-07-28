@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import json, urllib2, sys
+import json, urllib2, sys, datetime
 
 class PackagePayload:
     def __init__(self, jsonString):
@@ -76,11 +76,8 @@ def Main():
         print(COLUMNS % (p.TrackingNumber,
                          i.data['shipper'],
                          i.data['shipmentStatus'].title(),
-                         i.data['deliveryEstimate']
+                         datetime.datetime.fromtimestamp(i.data['deliveryEstimate']).strftime('%a, %b %d')
                          ))
-        
-        #print('-' * 60)
-
 
 if __name__ == '__main__':
     Main()
